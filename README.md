@@ -1,6 +1,6 @@
 # 🔋 EV Atlas
 
-**[maninae.github.io/ev-atlas](https://maninae.github.io/ev-atlas)**
+**[maninae.github.io/electric-vehicle-adoption](https://maninae.github.io/electric-vehicle-adoption)**
 
 How the world is switching to electric cars — and what it means where you live.
 
