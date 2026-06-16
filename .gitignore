@@ -1,0 +1,4 @@
+node_modules/
+build/venv/
+build/raw/
+.DS_Store

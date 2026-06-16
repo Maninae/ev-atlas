@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EV Atlas — how the world is going electric</title>
+<meta name="description" content="Where electric cars are taking over — and where they aren't. Explore EV adoption across every US state and country, battery prices over time, and the 200-year story of the electric car.">
+<meta property="og:title" content="EV Atlas — how the world is going electric">
+<meta property="og:description" content="Explore electric-vehicle adoption across every US state and country, falling battery prices, and the 200-year story of the electric car.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://maninae.github.io/ev-atlas/">
+<meta property="og:image" content="https://maninae.github.io/ev-atlas/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="EV Atlas — how the world is going electric">
+<meta name="twitter:image" content="https://maninae.github.io/ev-atlas/assets/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#11161B">
+<script>
+(function () {
+  var t = localStorage.getItem("eva-theme");
+  if (!t) t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  document.documentElement.dataset.theme = t;
+})();
+</script>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/charts.css">
+<link rel="stylesheet" href="css/evatlas.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='82' font-size='80'>🔋</text></svg>">
+</head>
+<body>
+
+<!-- ===================== sticky topbar (always visible — holds tab nav) ===================== -->
+<header class="eva-topbar" id="topbar">
+  <a class="topbar-brand" href="#us">🔋 EV&nbsp;Atlas</a>
+  <nav class="tabnav" id="tabnav" aria-label="Views">
+    <button class="tab-btn" data-tab="us">United States</button>
+    <button class="tab-btn" data-tab="world">The Planet</button>
+    <button class="tab-btn" data-tab="timeline">Timeline</button>
+  </nav>
+  <button id="theme-toggle" class="theme-toggle" aria-label="Switch color theme">☀️</button>
+</header>
+
+<p id="boot-error" class="boot-error" hidden></p>
+
+<!-- ============================================================ -->
+<!-- TAB 1 — UNITED STATES                                        -->
+<!-- ============================================================ -->
+<section class="tab-view" id="tab-us" aria-label="United States">
+  <header class="hero">
+    <p class="kicker">🔋 EV Atlas · United States</p>
+    <h1>How fast is America<br>going <em>electric</em>?</h1>
+    <p class="deck">
+      A decade ago, electric cars were a rounding error. Today, roughly
+      <span class="stat" data-fill="us-share-now">1 in 10</span> new cars sold in the
+      US is electric — but the map is wildly uneven. Find your state.
+    </p>
+    <form id="us-search" class="zip-form" autocomplete="off">
+      <input id="us-input" maxlength="20" placeholder="Search a state — California, CA…" aria-label="State name or code">
+      <button type="submit">Explore</button>
+      <span id="us-error" class="zip-mini-error" role="alert"></span>
+    </form>
+  </header>
+
+  <section class="map-grid-section">
+    <h2>The whole country, four ways</h2>
+    <p class="deck-small">Each map colors all 50 states by a different measure. Click any state to dive in.</p>
+    <div class="map-grid" id="us-map-grid">
+      <figure class="map-cell"><figcaption><h3>EV share of new cars</h3><p>How many new cars bought here are electric. <button class="info-btn" data-info="electric" aria-label="What counts as electric?">i</button></p></figcaption><div class="us-map" id="usmap-share"></div></figure>
+      <figure class="map-cell"><figcaption><h3>EVs per 1,000 people</h3><p>How many electric cars are already on the road.</p></figcaption><div class="us-map" id="usmap-percap"></div></figure>
+      <figure class="map-cell"><figcaption><h3>Charging ports per capita</h3><p>Where it's easy — or hard — to plug in.</p></figcaption><div class="us-map" id="usmap-charging"></div></figure>
+      <figure class="map-cell"><figcaption><h3>How clean is charging?</h3><p>Share of the local grid that's clean power. <a href="https://maninae.github.io/grid-atlas/" target="_blank" rel="noopener">via Grid Atlas</a></p></figcaption><div class="us-map" id="usmap-clean"></div></figure>
+    </div>
+  </section>
+
+  <section class="region-panel" id="us-panel" hidden></section>
+
+  <section class="showcase" id="us-chips-section">
+    <h2>Jump to a state</h2>
+    <div class="chip-row" id="us-chips"></div>
+  </section>
+</section>
+
+<!-- ============================================================ -->
+<!-- TAB 2 — THE PLANET                                           -->
+<!-- ============================================================ -->
+<section class="tab-view" id="tab-world" aria-label="The Planet">
+  <header class="hero">
+    <p class="kicker">🔋 EV Atlas · The Planet</p>
+    <h1>The world is<br>switching <em>on</em></h1>
+    <p class="deck">
+      About <span class="stat" data-fill="world-share-now">1 in 5</span> new cars sold
+      worldwide is now electric. China and Norway are racing ahead, the US is mid-pack,
+      and the Global South is electrifying two and three wheels first. Pick a country.
+    </p>
+    <form id="world-search" class="zip-form" autocomplete="off">
+      <input id="world-input" maxlength="40" placeholder="Country (e.g. China, Norway, India)" aria-label="Country">
+      <button type="submit">Explore</button>
+      <span id="world-error" class="zip-mini-error" role="alert"></span>
+    </form>
+  </header>
+
+  <section class="map-grid-section">
+    <h2>Every country, four ways</h2>
+    <p class="deck-small">Click any country to see its trajectory.</p>
+    <div class="map-grid" id="world-map-grid">
+      <figure class="map-cell"><figcaption><h3>EV share of new cars</h3><p>How many new cars sold are electric. <button class="info-btn" data-info="electric" aria-label="What counts as electric?">i</button></p></figcaption><div class="us-map" id="worldmap-share"></div></figure>
+      <figure class="map-cell"><figcaption><h3>EVs per 1,000 people</h3><p>How deep the fleet has gone electric.</p></figcaption><div class="us-map" id="worldmap-percap"></div></figure>
+      <figure class="map-cell"><figcaption><h3>How clean is the grid?</h3><p>Low-carbon share of electricity — how green an EV really is here.</p></figcaption><div class="us-map" id="worldmap-clean"></div></figure>
+      <figure class="map-cell"><figcaption><h3>Growth, year over year</h3><p>Where adoption is accelerating fastest.</p></figcaption><div class="us-map" id="worldmap-growth"></div></figure>
+    </div>
+  </section>
+
+  <section class="region-panel" id="world-panel" hidden></section>
+
+  <section class="showcase">
+    <h2>Three stories the map can't tell</h2>
+    <p class="deck-small">The headline is China and Europe — but the most interesting chapters are elsewhere.</p>
+    <div class="callouts" id="world-callouts"></div>
+  </section>
+
+  <section class="showcase" id="battery-section">
+    <h2>Why it's all happening now</h2>
+    <p class="deck-small">The price of a battery pack fell faster than almost any technology in history. That's the whole story in one line.</p>
+    <div class="chart-card" id="battery-chart"></div>
+    <div id="cheapest-strip" class="cheapest-strip"></div>
+  </section>
+</section>
+
+<!-- ============================================================ -->
+<!-- TAB 3 — TIMELINE                                             -->
+<!-- ============================================================ -->
+<section class="tab-view" id="tab-timeline" aria-label="Timeline">
+  <header class="hero">
+    <p class="kicker">🔋 EV Atlas · Timeline</p>
+    <h1>The electric car is<br><em>200 years</em> old</h1>
+    <p class="deck">
+      It led the race in 1900, lost to gasoline, and came back from the dead.
+      Scroll down to travel through the whole story.
+    </p>
+    <p class="scroll-hint">↓ scroll to begin</p>
+  </header>
+
+  <div class="timeline-wrap">
+    <div class="tl-ticker" data-era="dawn"></div>
+    <div class="tl-track" id="timeline-track"></div>
+  </div>
+</section>
+
+<!-- ===================== methodology / footer ===================== -->
+<footer class="methodology">
+  <h2>Where this comes from</h2>
+  <p class="fine" id="methodology-text">
+    Country adoption figures from the IEA Global EV Outlook 2025 (via Our World
+    in Data), latest year 2024; "electric" counts battery-electric <em>and</em>
+    plug-in hybrid cars, so figures can run higher than battery-only national
+    tallies. US state data from the US Dept. of Energy AFDC (charging, BEV stock)
+    and the Alliance for Automotive Innovation (new-car share, 2025 Q1) — a few
+    state share values are estimated and flagged. Battery prices from BloombergNEF.
+    Grid-cleanliness data is shared with
+    <a href="https://maninae.github.io/grid-atlas/" target="_blank" rel="noopener">Grid Atlas</a>,
+    its sibling site about where your electricity comes from. All data is baked
+    into the page — nothing is tracked. Built by
+    <a href="https://maninae.github.io/" target="_blank" rel="noopener">Owen Wang</a>.
+  </p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
