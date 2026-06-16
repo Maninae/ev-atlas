@@ -1,55 +1,59 @@
-/* ===== Grid Atlas — Evergreen instrument panel =====
-   Deep pine-black granite, slate-green surfaces, emerald + ocean accents.
-   Syne (display) · Manrope (body/UI) · Spline Sans Mono (data readouts) */
+/* ===== EV Atlas — Voltage =====
+   Midnight indigo-black, electric teal-cyan + violet accents, charged amber.
+   Space Grotesk (display) · Manrope (body/UI) · JetBrains Mono (data readouts) */
 
 :root {
-  --paper: #11161B;
-  --paper-deep: #171D23;
-  --card: #181F26;
-  --pop: #222B34;
-  --pop-ink: #EDF2F0;
-  --pop-ink-soft: #C6D2CC;
-  --pop-border: #36424C;
-  --pop-accent: #4FD49B;
-  --ink: #EBF0F4;
-  --ink-soft: #9DAAB5;
-  --rule: #2A343D;
-  --accent: #41C98E;
-  --accent2: #5BA8DC;
-  --on-accent: #0B1310;
-  --gold: #F2B23E;
-  --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 14px 36px rgba(0, 0, 0, 0.35);
-  --map-nodata: #232C33;
-  --plant-fill: #1E262D;
-  --price-us: #8C99A3;
-  --price-state: #5BA8DC;
-  --topbar-bg: rgba(13, 18, 23, 0.88);
-  --pulse: #243039;
-  --num-glow: 0 0 26px rgba(65, 201, 142, 0.18);
-  --font-display: "Barlow Condensed", "Avenir Next Condensed", sans-serif;
+  --paper: #090C16;
+  --paper-deep: #0E1220;
+  --card: #131829;
+  --pop: #1B2236;
+  --pop-ink: #EAEEF8;
+  --pop-ink-soft: #BCC6DC;
+  --pop-border: #2C3550;
+  --pop-accent: #3DE3D4;
+  --ink: #EAEEF8;
+  --ink-soft: #93A0BC;
+  --rule: #222B43;
+  --accent: #2FE3D0;
+  --accent2: #9D8CFF;
+  --on-accent: #06121A;
+  --gold: #F5B63F;
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 16px 40px rgba(0, 0, 0, 0.45);
+  --map-nodata: #1A2133;
+  --plant-fill: #161C2E;
+  --price-us: #8B95AE;
+  --price-state: #9D8CFF;
+  --topbar-bg: rgba(10, 13, 22, 0.86);
+  --pulse: #1C2540;
+  --num-glow: 0 0 26px rgba(47, 227, 208, 0.20);
+  --font-display: "Space Grotesk", "Avenir Next", sans-serif;
   --font-body: "Manrope", -apple-system, sans-serif;
   --font-ui: "Manrope", -apple-system, sans-serif;
-  --font-mono: "Spline Sans Mono", ui-monospace, monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 [data-theme="light"] {
-  --paper: #F1F3F2;
-  --paper-deep: #E6EAE8;
+  --paper: #F4F6FB;
+  --paper-deep: #E9EDF6;
   --card: #FFFFFF;
-  --ink: #1C2630;
-  --ink-soft: #58656F;
-  --rule: #D9DEDC;
-  --accent: #178F5F;
-  --accent2: #2E7CB5;
+  --pop: #FFFFFF;
+  --pop-ink: #1A2238;
+  --pop-ink-soft: #4A5773;
+  --pop-border: #D5DCEC;
+  --ink: #182036;
+  --ink-soft: #56627E;
+  --rule: #DEE4F0;
+  --accent: #0E9E91;
+  --accent2: #6D55E0;
   --on-accent: #FFFFFF;
-  --gold: #B97E1F;
-  --shadow: 0 1px 2px rgba(20, 30, 40, 0.06), 0 10px 28px rgba(20, 30, 40, 0.10);
-  --map-nodata: #DCE2DF;
-  --plant-fill: #E8EDEA;
-  --price-us: #7C8891;
-  --price-state: #2E7CB5;
-  --topbar-bg: rgba(245, 247, 246, 0.9);
-  --pulse: #E9DECA; /* warm parchment — the light pulse dips warm, not gray */
+  --gold: #B5791A;
+  --shadow: 0 1px 2px rgba(20, 26, 45, 0.06), 0 10px 28px rgba(20, 26, 45, 0.10);
+  --map-nodata: #DEE3EF;
+  --plant-fill: #E8ECF5;
+  --price-us: #7A8499;
+  --price-state: #6D55E0;
+  --topbar-bg: rgba(244, 246, 251, 0.9);
+  --pulse: #DDE6F7; /* cool electric haze on the light pulse */
   --num-glow: none;
 }
 
@@ -59,8 +63,8 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   background:
-    radial-gradient(1100px 600px at 85% -5%, rgba(86, 168, 220, 0.07), transparent 60%),
-    radial-gradient(950px 550px at -5% 30%, rgba(65, 201, 142, 0.05), transparent 55%),
+    radial-gradient(1100px 600px at 85% -5%, rgba(157, 140, 255, 0.10), transparent 60%),
+    radial-gradient(950px 550px at -5% 30%, rgba(47, 227, 208, 0.07), transparent 55%),
     var(--paper);
   color: var(--ink);
   font-family: var(--font-body);
@@ -72,8 +76,8 @@ body {
 
 [data-theme="light"] body {
   background:
-    radial-gradient(1100px 600px at 85% -5%, rgba(46, 124, 181, 0.06), transparent 60%),
-    radial-gradient(950px 550px at -5% 30%, rgba(23, 143, 95, 0.04), transparent 55%),
+    radial-gradient(1100px 600px at 85% -5%, rgba(109, 85, 224, 0.07), transparent 60%),
+    radial-gradient(950px 550px at -5% 30%, rgba(14, 158, 145, 0.05), transparent 55%),
     var(--paper);
 }
 

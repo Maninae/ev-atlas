@@ -61,7 +61,7 @@
   position: absolute; top: 0; bottom: 0; left: 50%; width: 3px;
   transform: translateX(-50%);
   background: linear-gradient(180deg,
-    #C9A24B 0%, #C77B43 16%, #6E7B86 38%, #5BA8DC 64%, #41C98E 84%, #3EE0A0 100%);
+    #C9A24B 0%, #C77B43 16%, #6E7B86 38%, #5BA8DC 62%, #2FE3D0 84%, #48EFE0 100%);
   border-radius: 3px; opacity: 0.55;
 }
 
@@ -118,11 +118,11 @@
 .tl-node[data-era="gas"], .tl-era[data-era="gas"] { --era: #C77B43; }
 .tl-node[data-era="darkage"], .tl-era[data-era="darkage"] { --era: #828F9A; }
 .tl-node[data-era="revival"], .tl-era[data-era="revival"] { --era: #5BA8DC; }
-.tl-node[data-era="tesla"], .tl-era[data-era="tesla"] { --era: #41C98E; }
-.tl-node[data-era="mainstream"], .tl-era[data-era="mainstream"] { --era: #3EE0A0; }
+.tl-node[data-era="tesla"], .tl-era[data-era="tesla"] { --era: #2FE3D0; }
+.tl-node[data-era="mainstream"], .tl-era[data-era="mainstream"] { --era: #48EFE0; }
 .tl-ticker[data-era="dawn"] { --era: #C9A24B; } .tl-ticker[data-era="gas"] { --era: #C77B43; }
 .tl-ticker[data-era="darkage"] { --era: #828F9A; } .tl-ticker[data-era="revival"] { --era: #5BA8DC; }
-.tl-ticker[data-era="tesla"] { --era: #41C98E; } .tl-ticker[data-era="mainstream"] { --era: #3EE0A0; }
+.tl-ticker[data-era="tesla"] { --era: #2FE3D0; } .tl-ticker[data-era="mainstream"] { --era: #48EFE0; }
 
 /* mobile: spine slides left, every node on the right */
 @media (max-width: 720px) {
@@ -175,30 +175,47 @@
 .tc-axis { font-family: var(--font-mono); font-size: 11px; fill: var(--ink-soft); }
 .tc-annot { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; }
 
-/* ---------- region/country detail panel ---------- */
-.ev-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; margin-top: 4px; }
+/* ---------- region/country detail panel ----------
+   Cards are flex columns with a uniform gap so every card shares the same
+   vertical rhythm: heading → big number → pill → detail list line up across the row. */
+.ev-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; margin-top: 4px; align-items: stretch; }
+.ev-grid .card { display: flex; flex-direction: column; gap: 12px; }
+.ev-grid .card > h3 { margin: 0; }
 .ev-grid .card.wide { grid-column: 1 / -1; }
-.big-stat { display: flex; align-items: baseline; gap: 10px; margin: 2px 0 6px; }
+
+.big-stat { display: flex; align-items: baseline; gap: 10px; margin: 0; min-height: 52px; }
 .big-stat .num {
   font-family: var(--font-mono); font-weight: 600; line-height: 1;
-  font-size: clamp(40px, 5vw, 60px); letter-spacing: -0.02em; color: var(--accent);
+  font-size: clamp(38px, 4.6vw, 56px); letter-spacing: -0.02em; color: var(--accent);
   text-shadow: var(--num-glow);
 }
-.big-stat .unit { font-family: var(--font-ui); font-size: 14px; color: var(--ink-soft); line-height: 1.3; }
+.big-stat .unit { font-family: var(--font-ui); font-size: 13.5px; color: var(--ink-soft); line-height: 1.3; }
 .rank-pill {
   font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--ink-soft);
   background: var(--paper-deep); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 10px;
-  display: inline-block; margin-top: 4px;
+  align-self: flex-start;
 }
-.kv { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--rule); font-size: 15px; }
-.kv:last-child { border-bottom: 0; }
+.kv-list { display: flex; flex-direction: column; }
+.kv { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid var(--rule); font-size: 15px; }
 .kv .k { color: var(--ink-soft); }
 .kv .v { font-family: var(--font-mono); font-weight: 600; }
-.card .card-lead { font-size: 16px; color: var(--ink-soft); margin: 0 0 10px; }
-.charge-compare { display: flex; gap: 12px; margin-top: 8px; }
-.charge-compare .cc { flex: 1; text-align: center; background: var(--paper-deep); border-radius: 10px; padding: 12px; }
-.charge-compare .cc .amt { font-family: var(--font-mono); font-weight: 600; font-size: 26px; }
+.card .card-lead { font-size: 15.5px; color: var(--ink-soft); margin: 0; }
+.charge-compare { display: flex; gap: 12px; }
+.charge-compare .cc { flex: 1; text-align: center; background: var(--paper-deep); border-radius: 10px; padding: 12px 10px; }
+.charge-compare .cc .amt { font-family: var(--font-mono); font-weight: 600; font-size: 24px; }
 .charge-compare .cc.ev .amt { color: var(--accent); }
 .charge-compare .cc.gas .amt { color: var(--gold); }
 .charge-compare .cc .lbl { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
 .est-flag { font-size: 12px; color: var(--ink-soft); opacity: 0.8; font-style: italic; }
+
+/* ---------- choropleth maps (borders must STROKE not fill — else black wedges) ---------- */
+.choropleth-svg { display: block; }
+.geo { cursor: pointer; stroke: none; transition: opacity 0.15s ease; }
+.geo:hover { opacity: 0.82; }
+.geo.selected { stroke: var(--ink); stroke-width: 1.5; }
+.geo-borders { fill: none; stroke: var(--paper); stroke-width: 0.7; pointer-events: none; }
+.geo.flash { animation: geo-flash 1s ease-out; }
+@keyframes geo-flash {
+  0%, 25% { filter: drop-shadow(0 0 9px rgba(120, 240, 230, 0.65)); }
+  100% { filter: drop-shadow(0 0 0 rgba(120, 240, 230, 0)); }
+}

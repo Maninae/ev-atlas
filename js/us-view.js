@@ -99,32 +99,35 @@ function renderPanel(ab) {
       <div class="card">
         <h3>Going electric</h3>
         <div class="big-stat"><span class="num">${s.share}%</span><span class="unit">of new cars<br>are electric</span></div>
-        <span class="rank-pill">${ord(s.shareRank)} of ${meta.count}</span>
-        ${s.shareEstimated ? '<p class="est-flag">estimated from state-level reporting</p>' : '<p class="est-flag">confirmed by industry data</p>'}
-        <div class="kv"><span class="k">EVs on the road</span><span class="v">${s.evStock.toLocaleString()}</span></div>
-        <div class="kv"><span class="k">per 1,000 people</span><span class="v">${s.evPer1k}</span></div>
-        ${s.topModel ? `<div class="kv"><span class="k">most popular</span><span class="v">${s.topModel}</span></div>` : ""}
+        <span class="rank-pill">${ord(s.shareRank)} of ${meta.count} states</span>
+        ${s.shareEstimated ? '<p class="est-flag">estimated from state-level reporting</p>' : ""}
+        <div class="kv-list">
+          <div class="kv"><span class="k">EVs on the road</span><span class="v">${s.evStock.toLocaleString()}</span></div>
+          <div class="kv"><span class="k">per 1,000 people</span><span class="v">${s.evPer1k}</span></div>
+          ${s.topModel ? `<div class="kv"><span class="k">most popular</span><span class="v">${s.topModel}</span></div>` : ""}
+        </div>
       </div>
 
       <div class="card">
         <h3>Plugging in</h3>
         <div class="big-stat"><span class="num">${s.ports.toLocaleString()}</span><span class="unit">public<br>charging ports</span></div>
         <span class="rank-pill">${ord(s.portsPer100kRank)} per capita</span>
-        <div class="kv"><span class="k">ports per 100k people</span><span class="v">${s.portsPer100k}</span></div>
-        <p class="card-lead" style="margin-top:10px">More plugs make the switch easier — and the map of where they are is just as uneven as adoption itself.</p>
+        <div class="kv-list">
+          <div class="kv"><span class="k">ports per 100k people</span><span class="v">${s.portsPer100k}</span></div>
+          <div class="kv"><span class="k">EVs per public port</span><span class="v">${Math.round(s.evStock / s.ports)}</span></div>
+        </div>
       </div>
 
       <div class="card">
         <h3>What it costs to drive</h3>
-        <p class="card-lead">Charging at home vs. filling up, per 100 miles.
-          <button class="info-btn" data-info="charge" aria-label="assumptions">i</button></p>
+        ${evCost < gasCost
+          ? `<div class="big-stat"><span class="num">${Math.round((1 - evCost / gasCost) * 100)}%</span><span class="unit">cheaper to drive<br>on electricity</span></div>`
+          : `<div class="big-stat"><span class="num">$${evCost.toFixed(2)}</span><span class="unit">to drive 100 mi<br>on electricity</span></div>`}
+        <span class="rank-pill">per 100 miles <button type="button" class="info-btn" data-info="charge" aria-label="assumptions">i</button></span>
         <div class="charge-compare">
           <div class="cc ev"><div class="amt">$${evCost.toFixed(2)}</div><div class="lbl">electric · ${s.resPrice}¢/kWh</div></div>
           <div class="cc gas"><div class="amt">$${gasCost.toFixed(2)}</div><div class="lbl">gasoline · $${GAS}/gal</div></div>
         </div>
-        <p class="card-lead" style="margin-top:10px">${evCost < gasCost
-          ? `Driving electric here costs about <strong>${Math.round((1 - evCost / gasCost) * 100)}% less</strong> to drive.`
-          : `Electricity is pricey here — the fuel savings are slim.`}</p>
       </div>
 
       <div class="card wide">

@@ -9,19 +9,19 @@ const d3 = window.d3;
 
 // [lo, hi] endpoints per metric.
 const RAMPS = {
-  share:    ["#1E2A33", "#2FE0A0"], // EV share of new cars — electric mint-green
-  percap:   ["#1B2A38", "#5BA8DC"], // EVs per 1,000 people — ocean blue
-  charging: ["#2A2620", "#F2B23E"], // charging ports per capita — gold
-  clean:    ["#232C33", "#3ECF8E"], // grid cleanliness — Grid Atlas green (shared)
-  growth:   ["#211E33", "#A78BFA"], // YoY growth — violet (momentum)
-  lowcarbon:["#232C33", "#3ECF8E"], // world grid low-carbon % — same green as clean
+  share:    ["#0E2230", "#2FE3D0"], // EV share of new cars — electric teal-cyan (brand)
+  percap:   ["#1A1B33", "#9D8CFF"], // EVs per 1,000 people — electric violet
+  charging: ["#2A2620", "#F5B63F"], // charging ports per capita — charged amber
+  clean:    ["#142621", "#39D98E"], // grid cleanliness — green (Grid Atlas cross-link)
+  growth:   ["#1B1A33", "#9D8CFF"], // YoY growth — violet (momentum)
+  lowcarbon:["#142621", "#39D98E"], // world grid low-carbon % — same green as clean
 };
 
 // "growth" is the YoY change in EV share (percentage points) and CAN be negative
 // (Germany, Iceland, etc. fell in 2024). It gets a DIVERGING ramp centered on 0 so
 // declines read differently from flat — a single-hue ramp would paint them alike.
-const GROWTH_NEG = ["#D06A4A", "#39424B"]; // -8pp (amber-red) → 0 (neutral)
-const GROWTH_POS = ["#39424B", "#A78BFA"]; // 0 (neutral) → +12pp (violet)
+const GROWTH_NEG = ["#D06A4A", "#2A3350"]; // -8pp (amber-red) → 0 (neutral indigo)
+const GROWTH_POS = ["#2A3350", "#9D8CFF"]; // 0 (neutral indigo) → +12pp (violet)
 
 // Build a value→color function. `max` sets the top of the ramp (each map
 // normalizes to its own domain).

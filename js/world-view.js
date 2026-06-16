@@ -118,15 +118,17 @@ function selectCountry(a3, scroll) {
       </div>
       <div class="card">
         <h3>On the road</h3>
-        ${c.stock != null ? `<div class="big-stat"><span class="num">${(c.stock / 1e6 >= 1 ? (c.stock / 1e6).toFixed(1) + "M" : (c.stock / 1e3).toFixed(0) + "k")}</span><span class="unit">electric cars<br>in the fleet</span></div>` : '<p class="card-lead">—</p>'}
-        ${c.stockPer1k != null ? `<div class="kv"><span class="k">per 1,000 people</span><span class="v">${c.stockPer1k}</span></div>` : ""}
-        ${c.salesLatest != null ? `<div class="kv"><span class="k">sold in 2024</span><span class="v">${c.salesLatest.toLocaleString()}</span></div>` : ""}
+        ${c.stock != null ? `<div class="big-stat"><span class="num">${(c.stock / 1e6 >= 1 ? (c.stock / 1e6).toFixed(1) + "M" : (c.stock / 1e3).toFixed(0) + "k")}</span><span class="unit">electric cars<br>in the fleet</span></div>` : '<p class="card-lead">No fleet data available.</p>'}
+        <div class="kv-list">
+          ${c.stockPer1k != null ? `<div class="kv"><span class="k">per 1,000 people</span><span class="v">${c.stockPer1k}</span></div>` : ""}
+          ${c.salesLatest != null ? `<div class="kv"><span class="k">sold in 2024</span><span class="v">${c.salesLatest.toLocaleString()}</span></div>` : ""}
+        </div>
       </div>
       <div class="card">
         <h3>How clean is the grid?</h3>
         ${c.lowCarbon != null
           ? `<div class="big-stat"><span class="num">${c.lowCarbon}%</span><span class="unit">low-carbon<br>electricity</span></div>
-             <p class="card-lead" style="margin-top:8px">An EV charged in ${c.name} runs on power that's <strong>${cleanPhrase(c.lowCarbon)}</strong>.</p>`
+             <p class="card-lead">An EV charged in ${c.name} runs on power that's <strong>${cleanPhrase(c.lowCarbon)}</strong>.</p>`
           : '<p class="card-lead">No grid data available.</p>'}
       </div>
     </div>`;
