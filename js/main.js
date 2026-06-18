@@ -15,6 +15,7 @@ const FILES = {
 const TABS = ["us", "world", "timeline"];
 const inited = {};
 let DATA = null;
+let currentTab = null;
 
 async function boot() {
   try {
@@ -26,7 +27,7 @@ async function boot() {
     b.hidden = false; b.textContent = "Couldn't load data (" + e.message + "). Run from a local server, not file://.";
     return;
   }
-  window.EVA = { bindInfo: () => {}, data: DATA };
+  window.EVA = { data: DATA };
   fillHero();
   setupTheme();
   setupInfo();
@@ -66,9 +67,15 @@ function showTab(name) {
   TABS.forEach((t) => {
     document.getElementById("tab-" + t).classList.toggle("active", t === name);
     const btn = document.querySelector(`.tab-btn[data-tab="${t}"]`);
-    if (btn) btn.classList.toggle("active", t === name);
+    if (btn) {
+      btn.classList.toggle("active", t === name);
+      btn.setAttribute("aria-current", t === name ? "page" : "false");
+    }
   });
-  window.scrollTo({ top: 0, behavior: "auto" });
+  if (currentTab !== name) {
+    window.scrollTo({ top: 0, behavior: "auto" });
+    currentTab = name;
+  }
   if (!inited[name]) {
     inited[name] = true;
     if (name === "us") initUS(DATA);
@@ -80,7 +87,15 @@ function showTab(name) {
 /* ---- theme ---- */
 function setupTheme() {
   const btn = document.getElementById("theme-toggle");
-  const sync = () => { btn.textContent = document.documentElement.dataset.theme === "light" ? "🌙" : "☀️"; };
+  const syncMeta = (theme) => {
+    const m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.content = (theme === "light" ? "#F4F6FB" : "#090C16");
+  };
+  const sync = () => {
+    const theme = document.documentElement.dataset.theme;
+    btn.textContent = theme === "light" ? "🌙" : "☀️";
+    syncMeta(theme);
+  };
   sync();
   btn.addEventListener("click", () => {
     const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
@@ -115,10 +130,13 @@ function setupInfo() {
     pop.innerHTML = `<h4>${data.h}</h4><p>${data.p}</p>` + (data.a ? `<a href="${data.a[1]}" target="_blank" rel="noopener">${data.a[0]} ↗</a>` : "");
     document.body.appendChild(pop);
     const r = btn.getBoundingClientRect();
-    pop.style.left = Math.min(r.left + window.scrollX, window.innerWidth - 320) + "px";
-    pop.style.top = (r.bottom + window.scrollY + 8) + "px";
     pop.style.maxWidth = "300px";
+    pop.style.top = (r.bottom + window.scrollY + 8) + "px";
+    const w = pop.offsetWidth;
+    pop.style.left = Math.max(8 + window.scrollX, Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - w - 8)) + "px";
   });
+  window.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+  window.addEventListener("resize", () => close());
 }
 
 boot();

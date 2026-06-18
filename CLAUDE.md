@@ -60,7 +60,15 @@ maps build while their container is visible (SVG `viewBox` keeps them responsive
   calibrated estimates (`shareEstimated: true`, flagged in the UI + methodology).
 - **Timeline:** era color comes from the year, not the research category. Nodes
   reveal on scroll (IntersectionObserver, `unobserve` after) — a full-page
-  screenshot shows below-fold nodes blank; that's expected.
+  screenshot shows below-fold nodes blank; that's expected. The exhibit opens at
+  **1990** (`REVEAL_BEFORE` in `timeline.js`); the trimmed 1832–1989 prologue is
+  hidden behind a "go even further back" bubble that prepends it on click. The
+  pre-1990 set is curated down in `build_content.py` (`DROP_TITLES`) — edit there
+  and re-run, don't hand-edit `data/timeline.json`. The center spine is masked
+  behind each era header (`.tl-era::before`) so it never crosses the title text.
+- **Navigation is a fixed LEFT rail** (`.eva-rail`), not a top bar — content is
+  offset by `body { padding-left: var(--rail-w) }` (base.css). On ≤760px it drops
+  to a fixed bottom bar (and `padding-left`→`padding-bottom`).
 
 ## Local dev
 

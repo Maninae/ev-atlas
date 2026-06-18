@@ -53,11 +53,17 @@ export class Choropleth {
       .attr("class", "geo")
       .attr("aria-label", (d) => cfg.nameFor(d))
       .on("mousemove", (ev, d) => this.showTip(ev, d))
-      .on("mouseleave", () => this.tip.style("opacity", 0))
+      .on("mouseleave", () => this.hideTip())
+      .on("mouseout", () => this.hideTip())
       .on("click", (ev, d) => {
+        this.hideTip();
         const key = cfg.idFor(d);
         if (key && cfg.onClick) cfg.onClick(key);
       });
+
+    // Belt-and-suspenders: leaving the SVG entirely (or the pointer skipping a
+    // mouseleave on fast moves) should also kill the tip.
+    this.svg.on("mouseleave", () => this.hideTip());
 
     // Features with no join key (Antarctica, unmatched geometry) shouldn't grab
     // the cursor — no data, no tooltip, no click.
@@ -71,6 +77,12 @@ export class Choropleth {
 
     this.tip = d3.select(document.body).selectAll("div.map-tip").data([0])
       .join("div").attr("class", "map-tip");
+
+    // Scroll (incl. programmatic window.scrollTo on tab switch) and tab/visibility
+    // changes should hide the lingering tip. One global listener per instance is
+    // fine — the singleton tip just gets opacity:0 set repeatedly, cheaply.
+    this._onScroll = () => this.hideTip();
+    window.addEventListener("scroll", this._onScroll, { passive: true });
 
     if (cfg.legend) {
       this.legendEl = document.createElement("div");
@@ -92,6 +104,7 @@ export class Choropleth {
   }
 
   setSelected(key, flash = false) {
+    this.hideTip();
     this.paths.classed("selected", (d) => this.cfg.idFor(d) === key);
     this.paths.classed("flash", false);
     if (!flash || !key) return;
@@ -106,16 +119,35 @@ export class Choropleth {
   showTip(ev, d) {
     const key = this.cfg.idFor(d);
     if (key == null) return;
-    const html = this.cfg.tipFor ? this.cfg.tipFor(key, this.cfg.nameFor(d)) : null;
-    if (!html) return;
-    this.tip
-      .style("opacity", 1)
-      .style("left", `${ev.pageX + 14}px`)
-      .style("top", `${ev.pageY - 10}px`)
-      .html(html);
+    // Only re-render HTML when the hovered feature changes; cursor movement
+    // within the same geometry just repositions the tip.
+    if (key !== this._tipKey) {
+      const html = this.cfg.tipFor ? this.cfg.tipFor(key, this.cfg.nameFor(d)) : null;
+      if (!html) return;
+      this.tip.html(html);
+      this._tipKey = key;
+    }
+    this.tip.style("opacity", 1);
+    // Measure AFTER content is set, then flip when the tip would overflow the
+    // visible viewport on the right/bottom. Document-anchored (position:absolute).
+    const n = this.tip.node();
+    const w = n.offsetWidth, h = n.offsetHeight;
+    let x = ev.pageX + 14, y = ev.pageY - 10;
+    if (x + w > window.scrollX + window.innerWidth - 8) x = ev.pageX - w - 14;
+    if (y + h > window.scrollY + window.innerHeight - 8) y = ev.pageY - h - 10;
+    this.tip.style("left", x + "px").style("top", y + "px");
   }
 
-  destroy() { this.svg.remove(); if (this.legendEl) this.legendEl.remove(); }
+  hideTip() {
+    this.tip.style("opacity", 0);
+    this._tipKey = null;
+  }
+
+  destroy() {
+    window.removeEventListener("scroll", this._onScroll);
+    this.svg.remove();
+    if (this.legendEl) this.legendEl.remove();
+  }
 }
 
 /* ---- shared color helpers ---- */

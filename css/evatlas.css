@@ -2,37 +2,69 @@
    Tab navigation, the museum timeline spine, and world callouts. Kept separate
    from the cloned base/components so the shared theme stays a clean drop-in. */
 
-/* ---------- always-visible top bar (holds the tab nav) ---------- */
-.eva-topbar {
-  position: sticky; top: 0; z-index: 40;
-  display: flex; align-items: center; gap: 18px;
-  padding: 9px 18px;
-  background: var(--topbar-bg); backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--rule);
+/* ---------- fixed left rail (always visible — holds the tab nav) ----------
+   A vertical sidebar pinned to the left edge so the tabs travel with the reader
+   no matter how far up or down the page they scroll. Content is offset by the
+   rail width via `body { padding-left }` (set in base.css). On narrow screens it
+   becomes a fixed bottom bar. */
+.eva-rail {
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 40;
+  width: var(--rail-w, 172px);
+  display: flex; flex-direction: column; align-items: stretch; gap: 14px;
+  padding: 24px 16px;
+  background: var(--topbar-bg); backdrop-filter: blur(12px);
+  border-right: 1px solid var(--rule);
   transition: background-color 0.25s ease, color 0.25s ease;
 }
-.eva-topbar .topbar-brand {
-  font-family: var(--font-display); font-weight: 600; font-size: 21px;
+.eva-rail .rail-brand {
+  display: flex; align-items: center; gap: 9px;
+  padding: 4px 10px; margin-bottom: 6px;
+  font-family: var(--font-display); font-weight: 600; font-size: 20px;
   letter-spacing: 0.01em; color: var(--ink); text-decoration: none; white-space: nowrap;
 }
-.eva-topbar .tabnav { margin: 0 auto; }              /* center the tabs */
-.eva-topbar #theme-toggle {                           /* dock the toggle into the bar */
-  position: static; top: auto; right: auto; box-shadow: none;
-  width: 34px; height: 34px; flex-shrink: 0;
+.eva-rail .rail-brand .rb-icon { font-size: 23px; line-height: 1; }
+.eva-rail #theme-toggle {                  /* dock the toggle at the bottom of the rail */
+  position: static; top: auto; right: auto; margin-top: auto;
+  box-shadow: none; width: 36px; height: 36px; flex-shrink: 0;
+  background: transparent; border-color: transparent;
 }
 
-/* ---------- tab navigation (in the sticky topbar) ---------- */
-.tabnav { display: flex; gap: 4px; }
+/* ---------- tab navigation (vertical, in the rail) ---------- */
+.tabnav { display: flex; flex-direction: column; gap: 6px; }
 .tab-btn {
+  display: flex; align-items: center; gap: 10px;
   font-family: var(--font-display);
-  font-size: 18px; font-weight: 600; letter-spacing: 0.01em;
-  color: var(--ink-soft);
-  background: none; border: 0; border-radius: 9px;
-  padding: 6px 14px; cursor: pointer;
+  font-size: 16.5px; font-weight: 600; letter-spacing: 0.01em;
+  text-align: left; color: var(--ink-soft);
+  background: none; border: 0; border-radius: 10px;
+  padding: 10px 13px; cursor: pointer;
   transition: color 0.18s ease, background-color 0.18s ease;
 }
+.tab-btn .tb-ico { font-size: 16px; line-height: 1; flex-shrink: 0; }
 .tab-btn:hover { color: var(--ink); background: color-mix(in srgb, var(--accent) 10%, transparent); }
 .tab-btn.active { color: var(--on-accent); background: var(--accent); }
+
+/* narrow screens: the rail drops to a fixed bottom bar */
+@media (max-width: 760px) {
+  .eva-rail {
+    top: auto; right: 0; left: 0; bottom: 0;
+    width: auto; height: auto;
+    flex-direction: row; align-items: center; gap: 6px;
+    padding: 7px 10px;
+    border-right: 0; border-top: 1px solid var(--rule);
+  }
+  .eva-rail .rail-brand { display: none; }       /* the hero kicker already brands each tab */
+  .tabnav { flex-direction: row; gap: 4px; margin: 0 auto; }
+  .tab-btn { font-size: 14px; padding: 8px 11px; gap: 7px; }
+  .tab-btn .tb-ico { font-size: 14px; }
+  .eva-rail #theme-toggle { margin: 0; width: 34px; height: 34px; }
+}
+
+/* very narrow phones: collapse tab labels to icons so the bottom bar fits */
+@media (max-width: 440px) {
+  .eva-rail .tab-btn .tb-label { display: none; }
+  .tab-btn { padding: 8px 10px; }
+}
 
 /* Each tab is a full view; only one is shown at a time. */
 .tab-view { display: none; }
@@ -44,7 +76,7 @@
 
 /* sticky "you are here in time" ticker */
 .tl-ticker {
-  position: sticky; top: 64px; z-index: 5;
+  position: sticky; top: 12px; z-index: 5;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   width: max-content; margin: 0 auto 10px; padding: 8px 22px;
   background: var(--topbar-bg); backdrop-filter: blur(10px);
@@ -56,13 +88,16 @@
 
 .tl-track { position: relative; }
 
-/* the center line */
+/* the center line — fades IN at the very top so it doesn't slam into the first
+   era header, and is masked behind every era header by .tl-era::before below */
 .tl-spine {
   position: absolute; top: 0; bottom: 0; left: 50%; width: 3px;
   transform: translateX(-50%);
   background: linear-gradient(180deg,
     #C9A24B 0%, #C77B43 16%, #6E7B86 38%, #5BA8DC 62%, #2FE3D0 84%, #48EFE0 100%);
   border-radius: 3px; opacity: 0.55;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 70px);
+  mask-image: linear-gradient(180deg, transparent 0, #000 70px);
 }
 
 /* era band headings */
@@ -71,6 +106,16 @@
   opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease;
 }
 .tl-era.in-view { opacity: 1; transform: none; }
+/* knock the spine out behind the header words so the line never crosses the text —
+   it appears to fade away just above/below each era title. */
+.tl-era::before {
+  content: ""; position: absolute; z-index: -1;
+  left: 50%; top: -18px; bottom: -18px;
+  width: 460px; max-width: 92%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse 56% 58% at 50% 50%, var(--paper) 42%, transparent 72%);
+  pointer-events: none;
+}
 .tl-era .tl-era-hint { display: block; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); }
 .tl-era .tl-era-label {
   display: inline-block; margin-top: 4px; padding: 4px 18px;
@@ -124,8 +169,30 @@
 .tl-ticker[data-era="darkage"] { --era: #828F9A; } .tl-ticker[data-era="revival"] { --era: #5BA8DC; }
 .tl-ticker[data-era="tesla"] { --era: #2FE3D0; } .tl-ticker[data-era="mainstream"] { --era: #48EFE0; }
 
+/* sections (default-visible 1990→today, plus the revealed pre-1990 prologue) */
+.tl-section { position: relative; scroll-margin-top: 84px; }
+
+/* in light mode the gradient spine reads faint against the bright paper */
+[data-theme="light"] .tl-spine { opacity: 0.78; }
+
+/* the "go even further back" bubble — sits on the spine at the very top, like a
+   station on the line. Reveals the trimmed pre-1990 prologue above it. */
+.tl-reveal {
+  position: relative; z-index: 4;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  width: max-content; max-width: 90%;
+  margin: 6px auto 44px; padding: 12px 26px;
+  background: var(--card); border: 1px solid var(--rule); border-radius: 999px;
+  box-shadow: var(--shadow); cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease;
+}
+.tl-reveal:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow), 0 0 22px rgba(47, 227, 208, 0.14); }
+.tl-reveal .tl-reveal-q { font-family: var(--font-display); font-weight: 600; font-size: 16.5px; color: var(--ink); }
+.tl-reveal .tl-reveal-cta { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.tl-reveal[hidden] { display: none; }
+
 /* mobile: spine slides left, every node on the right */
-@media (max-width: 720px) {
+@media (max-width: 760px) {
   .tl-spine { left: 20px; }
   .tl-node, .tl-node.left, .tl-node.right { width: 100%; left: 0; text-align: left; padding: 14px 8px 14px 44px; transform: translateX(-24px); }
   .tl-node.in-view { transform: none; }
@@ -141,6 +208,17 @@
 .callout h3 { font-family: var(--font-display); font-size: 24px; font-weight: 600; margin: 6px 0 6px; }
 .callout p { font-size: 15.5px; line-height: 1.5; color: var(--ink-soft); margin: 0; }
 .callout .co-stat { font-family: var(--font-mono); font-weight: 600; color: var(--accent); font-size: 17px; margin-top: 10px; }
+
+/* ---------- search error (sits BELOW the search pill, not beside it) ---------- */
+.search-error {
+  display: block; text-align: center;
+  font-family: var(--font-ui); font-size: 14.5px; font-weight: 500;
+  color: #E07856; min-height: 21px; margin: 12px 0 0;
+  opacity: 0; transform: translateY(-3px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.search-error:not(:empty) { opacity: 1; transform: none; }
+[data-theme="light"] .search-error { color: #B3402A; }
 
 /* ---------- misc shell pieces ---------- */
 .scroll-hint {
@@ -183,13 +261,23 @@
 .ev-grid .card > h3 { margin: 0; }
 .ev-grid .card.wide { grid-column: 1 / -1; }
 
-.big-stat { display: flex; align-items: baseline; gap: 10px; margin: 0; min-height: 52px; }
+/* Explicit column counts so the top tiles stretch to the SAME full width as the
+   wide visualization below. (With auto-fit, a full-width `.card.wide` forces an
+   extra phantom column, leaving the top tiles short of the wide card's edge.)
+   US panel = 3 tiles + a full-width chart; World panel = a full-width chart on
+   top of 2 tiles. */
+#us-panel .ev-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#world-panel .ev-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 1000px) { #us-panel .ev-grid { grid-template-columns: 1fr; } }
+@media (max-width: 680px) { #world-panel .ev-grid { grid-template-columns: 1fr; } }
+
+.big-stat { display: flex; align-items: baseline; gap: 11px; margin: 0; min-height: 52px; }
 .big-stat .num {
   font-family: var(--font-mono); font-weight: 600; line-height: 1;
-  font-size: clamp(38px, 4.6vw, 56px); letter-spacing: -0.02em; color: var(--accent);
+  font-size: clamp(30px, 3.2vw, 46px); letter-spacing: -0.02em; color: var(--accent);
   text-shadow: var(--num-glow);
 }
-.big-stat .unit { font-family: var(--font-ui); font-size: 13.5px; color: var(--ink-soft); line-height: 1.3; }
+.big-stat .unit { font-family: var(--font-ui); font-size: 13.5px; color: var(--ink-soft); line-height: 1.3; min-width: 0; }
 .rank-pill {
   font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--ink-soft);
   background: var(--paper-deep); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 10px;
@@ -212,8 +300,8 @@
 .choropleth-svg { display: block; }
 .geo { cursor: pointer; stroke: none; transition: opacity 0.15s ease; }
 .geo:hover { opacity: 0.82; }
-.geo.selected { stroke: var(--ink); stroke-width: 1.5; }
-.geo-borders { fill: none; stroke: var(--paper); stroke-width: 0.7; pointer-events: none; }
+.geo.selected { stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.geo-borders { fill: none; stroke: var(--paper); stroke-width: 0.7; pointer-events: none; vector-effect: non-scaling-stroke; }
 .geo.flash { animation: geo-flash 1s ease-out; }
 @keyframes geo-flash {
   0%, 25% { filter: drop-shadow(0 0 9px rgba(120, 240, 230, 0.65)); }

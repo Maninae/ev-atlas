@@ -50,6 +50,15 @@ export function rampColors(metric) {
 }
 
 export function legendHtml(metric, loLabel, hiLabel) {
+  // The growth metric uses a diverging ramp around 0 (negatives → indigo neutral
+  // → positives). Without a midpoint label the reader can't tell where 0 sits on
+  // the asymmetric -8..+12 bar, so add one. Other metrics keep their simple lo/hi.
+  if (metric === "growth") {
+    return `<span class="legend-lo">${loLabel}</span>` +
+      `<span class="legend-ramp" style="background:linear-gradient(90deg, ${rampColors(metric).join(",")})"></span>` +
+      `<span class="legend-mid">0</span>` +
+      `<span class="legend-hi">${hiLabel}</span>`;
+  }
   return `<span class="legend-lo">${loLabel}</span>` +
     `<span class="legend-ramp" style="background:linear-gradient(90deg, ${rampColors(metric).join(",")})"></span>` +
     `<span class="legend-hi">${hiLabel}</span>`;

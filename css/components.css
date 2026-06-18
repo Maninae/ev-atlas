@@ -1,88 +1,4 @@
-/* Reusable interface pieces: forms, cards, chips, popovers, timeline. */
-
-/* ---------- sticky topbar ---------- */
-.topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 8px 18px;
-  padding-right: 64px;
-  background: var(--topbar-bg);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--rule);
-  transform: translateY(-100%);
-  transition: transform 0.25s ease, background-color 0.25s ease, color 0.25s ease;
-}
-.topbar.visible { transform: none; }
-
-.topbar-brand {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  font-size: 13px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.zip-mini { display: flex; align-items: center; gap: 8px; }
-.zip-mini input {
-  font-family: var(--font-ui);
-  font-size: 15px;
-  width: 110px;
-  padding: 6px 12px;
-  border: 1.5px solid var(--rule);
-  border-radius: 999px;
-  background: var(--card);
-  color: var(--ink);
-  outline: none;
-}
-.zip-mini input:focus { border-color: var(--ink); }
-.zip-mini button {
-  font-family: var(--font-ui);
-  font-weight: 700;
-  font-size: 14px;
-  background: var(--accent);
-  color: var(--on-accent);
-  border: none;
-  border-radius: 999px;
-  padding: 7px 16px;
-  cursor: pointer;
-}
-.zip-mini button:hover { background: var(--accent2); }
-.zip-mini-error {
-  font-family: var(--font-ui);
-  font-size: 12px;
-  color: #E07856;
-}
-
-/* ---------- scroll cue (appears after a map click instead of auto-scroll) ---------- */
-.scroll-cue {
-  position: fixed;
-  left: 50%;
-  bottom: 26px;
-  z-index: 50;
-  font-family: var(--font-ui);
-  font-weight: 700;
-  font-size: 15px;
-  color: var(--ink);
-  background: var(--topbar-bg);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  padding: 10px 20px;
-  box-shadow: var(--shadow);
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, 12px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-.scroll-cue.visible { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
-.scroll-cue:hover { border-color: var(--accent); color: var(--accent); }
+/* Reusable interface pieces: forms, cards, popovers, map bits. */
 
 /* ---------- zip form ---------- */
 .zip-form {
@@ -92,7 +8,7 @@
   border: 1px solid var(--rule);
   border-radius: 999px;
   padding: 7px;
-  box-shadow: var(--shadow), 0 0 28px rgba(65, 201, 142, 0.12);
+  box-shadow: var(--shadow), 0 0 28px rgba(47, 227, 208, 0.12);
 }
 .zip-form:focus-within { border-color: var(--accent); }
 
@@ -124,38 +40,7 @@
 .zip-form button:hover { background: var(--accent2); }
 .zip-form button:active { transform: scale(0.97); }
 
-.zip-error {
-  font-family: var(--font-ui);
-  font-size: 14px;
-  color: #E07856;
-  min-height: 20px;
-  margin: 10px 0 0;
-}
-
-/* ---------- Texas utility picker (region sub-line) ---------- */
-#util-select {
-  font-family: var(--font-ui);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 8px;
-  padding: 4px 8px;
-  max-width: min(340px, 80vw);
-  cursor: pointer;
-}
-#util-select:focus { outline: none; border-color: var(--accent); }
-
-/* ---------- cards ----------
-   Top grid: big mix tile beside a stacked carbon + price column. The two
-   columns size to their own content (no row-span stretching the mix tile
-   into dead vertical space when the right column is tall).
-   Bottom grid: full-width trend/plants/story.
-   The day-on-grid scrolly section sits between the two grids. */
-.cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; }
-.cards + .cards, .day-scrolly + .cards, .day-missing + .cards { margin-top: 18px; }
-
+/* ---------- cards ---------- */
 .card {
   background: var(--card);
   border: 1px solid var(--rule);
@@ -170,80 +55,6 @@
   font-weight: 600;
   letter-spacing: 0.01em;
   margin-bottom: 5px;
-}
-
-/* Mix tile sits beside the stacked carbon + price cards. We let the grid
-   rows size to the right column's content and let the mix tile's inner flex
-   column distribute the extra height (waffle + legend area grows) so the
-   tile never leaves a slab of dead space below the caption. */
-.card-mix {
-  grid-column: 1 / 5;
-  grid-row: span 2;
-  display: flex;
-  flex-direction: column;
-}
-.card-mix > #mix-waffle { flex: 1 1 auto; align-content: flex-start; }
-.card-co2, .card-price { grid-column: 5 / 7; }
-.card-trend, .card-plants, .card-story { grid-column: 1 / -1; }
-
-/* waffle + vertical legend side by side inside the big mix tile */
-#mix-waffle { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
-#mix-waffle .waffle-grid { flex: 0 1 360px; }
-#mix-waffle .waffle-legend {
-  flex: 1 1 210px;
-  max-width: 300px; /* keep the % numbers close to their labels */
-  flex-direction: column;
-  align-items: stretch;
-  gap: 11px;
-  margin-top: 2px;
-  font-size: 15.5px;
-}
-#mix-waffle .legend-item { display: grid; grid-template-columns: 14px 1fr auto; gap: 4px 9px; align-items: center; }
-.legend-sub { grid-column: 2 / 4; font-size: 12.5px; color: var(--ink-soft); }
-
-@media (max-width: 1000px) {
-  .card-mix { grid-column: 1 / -1; grid-row: auto; }
-  .card-co2 { grid-column: 1 / 4; }
-  .card-price { grid-column: 4 / 7; }
-}
-
-.card-note {
-  font-family: var(--font-ui);
-  font-size: 13px;
-  color: var(--ink-soft);
-  margin: 0 0 12px;
-}
-
-.card-sentence { font-size: 17px; margin: 12px 0 0; }
-
-.tag {
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: var(--paper-deep);
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  padding: 2px 7px;
-  color: var(--ink-soft);
-}
-
-/* ---------- CO2 big number ---------- */
-.co2-big { display: flex; align-items: baseline; gap: 14px; margin: 6px 0 4px; }
-.co2-number {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: clamp(54px, 5.2vw, 74px);
-  line-height: 1;
-  letter-spacing: -0.03em;
-  text-shadow: var(--num-glow);
-}
-.co2-unit {
-  font-family: var(--font-ui);
-  font-size: 14px;
-  line-height: 1.3;
-  color: var(--ink-soft);
 }
 
 /* ---------- info popovers ---------- */
@@ -312,57 +123,10 @@
 .legend-item { display: inline-flex; align-items: center; gap: 5px; }
 .legend-swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
 .legend-ramp { width: 110px; height: 9px; border-radius: 5px; display: inline-block; }
-.legend-lo, .legend-hi { font-size: 11px; }
+.legend-lo, .legend-hi, .legend-mid { font-size: 11px; }
+.legend-mid { color: var(--ink-soft); }
 
-/* ---------- waffle ---------- */
-.waffle-grid {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 4px;
-  max-width: 330px;
-  aspect-ratio: 1;
-}
-.waffle-sq { border-radius: 3.5px; transition: transform 0.15s ease; }
-.waffle-sq:hover { transform: scale(1.18); }
-
-.waffle-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  margin-top: 16px;
-  font-family: var(--font-ui);
-  font-size: 14px;
-}
-.waffle-legend .legend-value {
-  font-family: var(--font-mono);
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-/* ---------- plants ---------- */
-.plants-flex { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
-#plants-map { flex: 1 1 320px; max-width: 520px; }
-.plants-list { flex: 1 1 300px; list-style: none; margin: 0; padding: 0; }
-.plants-list li {
-  display: grid;
-  grid-template-columns: 14px 1fr;
-  gap: 4px 10px;
-  padding: 11px 0;
-  border-bottom: 1px solid var(--rule);
-}
-.plant-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 5px; }
-.plant-name { font-family: var(--font-ui); font-weight: 600; font-size: 16px; }
-.plant-meta { grid-column: 2; font-family: var(--font-ui); font-size: 13px; color: var(--ink-soft); }
-.plants-legend {
-  display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px;
-  font-family: var(--font-ui); font-size: 12.5px; color: var(--ink-soft);
-}
-
-/* ---------- showcase chips ---------- */
-.chips { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
-.chips-all-label { font-family: var(--font-ui); font-size: 13px; color: var(--ink-soft); margin: 22px 0 10px; }
-.chips-all { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; max-width: 1000px; margin: 0 auto; }
+/* ---------- state chip (used by us-view / world-view chip rows) ---------- */
 .chip-mini {
   font-family: var(--font-ui); font-size: 13.5px; font-weight: 500;
   color: var(--ink-soft); background: var(--card);
@@ -371,160 +135,8 @@
   transition: color 0.15s ease, border-color 0.15s ease;
 }
 .chip-mini:hover { color: var(--ink); border-color: var(--accent); }
-p.day-missing { margin: 14px 0; }
-.chip {
-  font-family: var(--font-ui);
-  font-weight: 600;
-  font-size: 16px;
-  background: var(--card);
-  color: var(--ink);
-  border: 1.5px solid var(--rule);
-  border-radius: 14px;
-  padding: 14px 22px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-.chip span { font-weight: 400; font-size: 13px; color: var(--ink-soft); font-family: var(--font-body); }
-.chip:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow), 0 0 22px rgba(65, 201, 142, 0.10); }
 
-/* ---------- story timeline ---------- */
-.timeline { list-style: none; margin: 26px 0 8px; padding: 0; position: relative; }
-.timeline::before {
-  content: "";
-  position: absolute;
-  left: 54px; top: 6px; bottom: 6px;
-  width: 2px;
-  background: var(--rule);
-}
-.tl-event { display: flex; gap: 26px; padding: 9px 0; position: relative; }
-.tl-year {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: 14.5px;
-  width: 44px;
-  text-align: right;
-  flex-shrink: 0;
-  color: var(--accent);
-}
-.tl-event::after {
-  content: "";
-  position: absolute;
-  left: 49px; top: 17px;
-  width: 12px; height: 12px;
-  border-radius: 50%;
-  background: var(--card);
-  border: 3px solid var(--accent);
-}
-.tl-event.tl-plant::after { border-color: var(--gold); }
-.tl-event.tl-market::after { border-color: var(--accent2); }
-.tl-event.tl-milestone::after { border-color: var(--ink-soft); }
-.tl-body h4 { font-family: var(--font-ui); font-size: 16.5px; font-weight: 700; margin: 0 0 4px; }
-.tl-body p { margin: 0; font-size: 17px; color: var(--ink-soft); }
-.tl-src { text-decoration: none; font-size: 13px; opacity: 0.65; }
-
-.sig-plant {
-  margin: 22px 0 0;
-  padding: 16px 20px;
-  background: var(--paper-deep);
-  border-radius: 12px;
-  font-size: 17px;
-}
-.sig-kicker {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--accent);
-  display: block;
-  margin-bottom: 4px;
-}
-
-/* ---------- sources table ---------- */
-.sources {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--font-ui);
-  font-size: 14.5px;
-  margin: 18px 0 22px;
-}
-.sources th {
-  text-align: left;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  border-bottom: 2px solid var(--ink);
-  padding: 8px 10px 6px 0;
-}
-.sources td { border-bottom: 1px solid var(--rule); padding: 9px 10px 9px 0; }
-
-/* ---------- day-on-grid scrolly showcase ---------- */
-.day-scrolly {
-  display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(230px, 1fr);
-  gap: 44px;
-  margin-top: 18px;
-}
-.day-scrolly[hidden] { display: none; }
-
-.day-sticky {
-  position: sticky;
-  top: 58px;
-  align-self: start;
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 16px;
-  padding: 22px 24px;
-  box-shadow: var(--shadow);
-}
-
-.day-steps { display: flex; flex-direction: column; padding: 4vh 0 10vh; }
-
-.dstep {
-  min-height: 52vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  opacity: 0.3;
-  transition: opacity 0.35s ease;
-}
-.dstep.active { opacity: 1; }
-
-.dstep h4 {
-  font-family: var(--font-display);
-  font-size: 27px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  margin: 0 0 6px;
-}
-.dstep p { margin: 0; font-size: 17px; color: var(--ink-soft); max-width: 34ch; }
-
-/* scroll-driven hour-band highlight: dim everything outside the band */
-.chart .dim { fill: var(--card); opacity: 0.62; pointer-events: none; }
-
-@media (max-width: 900px) {
-  .day-scrolly { grid-template-columns: 1fr; gap: 0; }
-  .day-sticky { top: 50px; z-index: 5; }
-  .dstep { min-height: 46vh; }
-  .dstep p { max-width: none; }
-}
-
-@media (max-width: 760px) {
-  .cards { grid-template-columns: 1fr; }
-  .card-mix, .card-co2, .card-price { grid-column: 1 / -1; }
-  .timeline::before { left: 44px; }
-  .tl-year { width: 34px; }
-  .tl-event { gap: 20px; }
-  .tl-event::after { left: 39px; }
-  .co2-number { font-size: 64px; }
-}
-
-/* ---------- theme toggle (top-right, fixed) ---------- */
+/* ---------- theme toggle (the rail overrides position; this supplies size/border/bg) ---------- */
 .theme-toggle {
   position: fixed;
   top: 10px; right: 14px;
@@ -540,34 +152,3 @@ p.day-missing { margin: 14px 0; }
   box-shadow: var(--shadow);
 }
 .theme-toggle:hover { border-color: var(--accent); }
-
-[data-theme="light"] .zip-error,
-[data-theme="light"] .zip-mini-error { color: #B3402A; }
-
-/* ---------- share / download-as-image button ----------
-   .day-sticky is intentionally excluded here: it already uses `position: sticky`
-   (which establishes the containing block the .share-btn anchors to), and
-   overriding it to `relative` breaks the scroll-driven stick. */
-.card, .map-cell { position: relative; }
-.share-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 5;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  border: 1px solid var(--rule);
-  background: var(--paper-deep);
-  color: var(--ink-soft);
-  font-size: 15px;
-  line-height: 1;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-.card:hover .share-btn,
-.map-cell:hover .share-btn,
-.day-sticky:hover .share-btn,
-.share-btn:focus-visible { opacity: 1; }
-.share-btn:hover { color: var(--accent); border-color: var(--accent); }

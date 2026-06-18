@@ -69,15 +69,49 @@ export function initWorld(data) {
   strip.after(note);
 
   // search
+  const ALIASES = { uk: "GBR", gb: "GBR", britain: "GBR", us: "USA", usa: "USA", america: "USA", uae: "ARE", drc: "COD", "south korea": "KOR", "north korea": "PRK" };
   const form = document.getElementById("world-search");
   form.onsubmit = (e) => {
     e.preventDefault();
     const q = document.getElementById("world-input").value.trim().toLowerCase();
     const err = document.getElementById("world-error");
-    const hit = Object.keys(WORLD).find((a3) => WORLD[a3].name.toLowerCase() === q) ||
-                Object.keys(WORLD).find((a3) => WORLD[a3].name.toLowerCase().startsWith(q) && q.length >= 3);
-    if (hit) { err.textContent = ""; selectCountry(hit, true); }
-    else err.textContent = "Try a country name.";
+    const clearSuggest = () => { const s = document.getElementById("world-suggest"); if (s) s.remove(); };
+    if (!q) { err.textContent = ""; clearSuggest(); return; }
+    // alias
+    if (ALIASES[q] && WORLD[ALIASES[q]]) { err.textContent = ""; clearSuggest(); selectCountry(ALIASES[q], true); return; }
+    // exact name
+    const exact = Object.keys(WORLD).find((a3) => WORLD[a3].name.toLowerCase() === q);
+    if (exact) { err.textContent = ""; clearSuggest(); selectCountry(exact, true); return; }
+    // candidates: startsWith or (>=3 chars and includes)
+    const seen = {};
+    const candidates = [];
+    Object.keys(WORLD).forEach((a3) => {
+      const n = WORLD[a3].name.toLowerCase();
+      if (n.startsWith(q) || (q.length >= 3 && n.includes(q))) {
+        if (!seen[a3]) { seen[a3] = 1; candidates.push(a3); }
+      }
+    });
+    if (candidates.length === 1) { err.textContent = ""; clearSuggest(); selectCountry(candidates[0], true); return; }
+    if (candidates.length >= 2) {
+      err.textContent = "Did you mean:";
+      clearSuggest();
+      const row = document.createElement("div");
+      row.id = "world-suggest";
+      row.className = "chip-row";
+      row.style.marginTop = "10px";
+      candidates.slice(0, 6).forEach((a3) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "chip-mini";
+        b.textContent = WORLD[a3].name;
+        b.onclick = () => selectCountry(a3, true);
+        row.appendChild(b);
+      });
+      form.after(row);
+      return;
+    }
+    err.textContent = "Try a country name.";
+    clearSuggest();
   };
 }
 
@@ -95,6 +129,12 @@ function cleanPhrase(p) {
 }
 
 function selectCountry(a3, scroll) {
+  // Clear any search error/suggestions on every entry — even a no-data click
+  // (an A3 in the geometry but absent from the data) shouldn't leave stale chips.
+  const errEl = document.getElementById("world-error");
+  if (errEl) errEl.textContent = "";
+  const sugEl = document.getElementById("world-suggest");
+  if (sugEl) sugEl.remove();
   const c = WORLD[a3];
   if (!c) return;
   selected = a3;
@@ -109,7 +149,7 @@ function selectCountry(a3, scroll) {
       ${c.story ? `<p class="region-sub">${c.story}</p>` : ""}
     </div>
     <div class="ev-grid">
-      <div class="card ${hasShare ? "wide" : ""}">
+      <div class="card wide">
         <h3>Share of new cars that are electric</h3>
         ${c.shareLatest != null
           ? `<div class="big-stat"><span class="num">${c.shareLatest}%</span><span class="unit">of new cars<br>are electric (2024)</span></div>`
@@ -135,7 +175,7 @@ function selectCountry(a3, scroll) {
 
   panel.hidden = false;   // unhide BEFORE charting so the chart measures real width
   if (hasShare && window.d3) {
-    const peak = Math.max.apply(null, c.salesShare.vals.filter((v) => v != null).concat(c.shareLatest || 0));
+    const peak = Math.max.apply(null, c.salesShare.vals.filter((v) => v != null).concat(c.shareLatest != null ? c.shareLatest : 0));
     trendChart(document.getElementById("world-share-chart"), {
       years: c.salesShare.years,
       series: [{ vals: c.salesShare.vals, color: "var(--accent)", area: true, label: (c.shareLatest != null ? c.shareLatest : peak) + "%" }],

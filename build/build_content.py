@@ -45,12 +45,33 @@ TWEAKS = {
     "Self-Starter": {"body_append": " (First demonstrated in 1911 and fitted to the 1912 Cadillac, it ended the dangerous hand-crank — and with it the electric car's biggest selling point.)"},
 }
 
+# Editorial trim of the deep (pre-1990) history: the early section had too many
+# entries, several making the same point. We cut ~half the pre-1990 stories
+# (keyed by title substring), keeping the pivotal beats — the invention, the
+# enabling battery, the 1900 peak, the gasoline-driven fall, and the mid-century
+# revival seeds. The 1990+ revival/Tesla/mainstream eras are untouched. The
+# pre-1990 survivors live behind the timeline's "go even further back" reveal.
+DROP_TITLES = (
+    "Thomas Davenport",                 # 1834 — redundant with Anderson's first-EV beat
+    "Galvani",                          # 1842 Davidson locomotive — redundant
+    "Hummingbird",                      # 1897 London cabs — kept the NYC fleet instead
+    "Baker Motor",                      # 1899 — Detroit Electric (1907) carries this story
+    "Electric Car That Never Was",      # 1914 Edison/Ford — a footnote
+    "Cheap Texas Oil",                  # 1920 — Model T + self-starter already mark the fall
+    "Electrovair",                      # 1966 — kept Henney + OPEC as the revival seeds
+    "CitiCar",                          # 1974 — ditto
+    "EV R&D Act",                       # 1976 — ditto
+)
+
 
 def build_timeline():
     R = C.research()
     events = R["history-timeline"]["research"]["events"]
     out = []
     for e in events:
+        title = e.get("title") or ""
+        if any(d.lower() in title.lower() for d in DROP_TITLES):
+            continue
         rec = {
             "year": str(e.get("year")),
             "date": e.get("date") or str(e.get("year")),

@@ -49,18 +49,45 @@ export function initUS(data) {
     e.preventDefault();
     const q = document.getElementById("us-input").value.trim().toLowerCase();
     const err = document.getElementById("us-error");
-    let hit = null;
-    if (US[q.toUpperCase()]) hit = q.toUpperCase();
-    else hit = states().find((ab) => US[ab].name.toLowerCase() === q) ||
-              states().find((ab) => US[ab].name.toLowerCase().startsWith(q) && q.length >= 3);
-    if (hit) { err.textContent = ""; selectState(hit, true); }
-    else err.textContent = "Try a state name or two-letter code.";
+    const clearSuggest = () => { const s = document.getElementById("us-suggest"); if (s) s.remove(); };
+    if (!q) { err.textContent = ""; clearSuggest(); return; }
+    if (US[q.toUpperCase()]) { selectState(q.toUpperCase(), true); return; }
+    const exact = states().find((ab) => US[ab].name.toLowerCase() === q);
+    if (exact) { selectState(exact, true); return; }
+    const candidates = states().filter((ab) => {
+      const n = US[ab].name.toLowerCase();
+      return n.startsWith(q) || (q.length >= 3 && n.includes(q));
+    });
+    if (candidates.length === 1) { selectState(candidates[0], true); return; }
+    if (candidates.length >= 2) {
+      err.textContent = "Did you mean:";
+      let row = document.getElementById("us-suggest");
+      if (!row) {
+        row = document.createElement("div");
+        row.id = "us-suggest";
+        row.className = "chip-row";
+        row.style.marginTop = "10px";
+        form.insertAdjacentElement("afterend", row);
+      }
+      row.innerHTML = "";
+      candidates.slice(0, 6).forEach((ab) => {
+        const b = document.createElement("button");
+        b.className = "chip-mini"; b.textContent = US[ab].name;
+        b.onclick = () => selectState(ab, true);
+        row.appendChild(b);
+      });
+      return;
+    }
+    err.textContent = "Try a state name or two-letter code.";
+    clearSuggest();
   };
 }
 
 export function refreshUS() { maps.forEach((m) => m.refresh()); }
 
 function selectState(ab, scroll) {
+  document.getElementById("us-error").textContent = "";
+  const sug = document.getElementById("us-suggest"); if (sug) sug.remove();
   selected = ab;
   maps.forEach((m) => m.setSelected(ab, true));
   document.body.classList.add("bg-pulse");
@@ -114,7 +141,7 @@ function renderPanel(ab) {
         <span class="rank-pill">${ord(s.portsPer100kRank)} per capita</span>
         <div class="kv-list">
           <div class="kv"><span class="k">ports per 100k people</span><span class="v">${s.portsPer100k}</span></div>
-          <div class="kv"><span class="k">EVs per public port</span><span class="v">${Math.round(s.evStock / s.ports)}</span></div>
+          <div class="kv"><span class="k">EVs per public port</span><span class="v">${s.ports ? Math.round(s.evStock / s.ports).toLocaleString() : "—"}</span></div>
         </div>
       </div>
 

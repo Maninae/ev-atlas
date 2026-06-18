@@ -33,19 +33,22 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='82' font-size='80'>🔋</text></svg>">
 </head>
 <body>
+<a href="#main" class="skip-link" style="position:absolute;left:-9999px;top:auto;background:var(--accent);color:var(--on-accent);padding:8px 14px;border-radius:8px;z-index:100" onfocus="this.style.left='8px';this.style.top='8px'" onblur="this.style.left='-9999px'">Skip to content</a>
 
-<!-- ===================== sticky topbar (always visible — holds tab nav) ===================== -->
-<header class="eva-topbar" id="topbar">
-  <a class="topbar-brand" href="#us">🔋 EV&nbsp;Atlas</a>
+<!-- ===================== fixed left rail (always visible — holds tab nav) ===================== -->
+<header class="eva-rail" id="railnav">
+  <a class="rail-brand" href="#us"><span class="rb-icon" aria-hidden="true">🔋</span><span class="rb-name">EV&nbsp;Atlas</span></a>
   <nav class="tabnav" id="tabnav" aria-label="Views">
-    <button class="tab-btn" data-tab="us">United States</button>
-    <button class="tab-btn" data-tab="world">The Planet</button>
-    <button class="tab-btn" data-tab="timeline">Timeline</button>
+    <button class="tab-btn" data-tab="us"><span class="tb-ico" aria-hidden="true">📍</span><span class="tb-label">United States</span></button>
+    <button class="tab-btn" data-tab="world"><span class="tb-ico" aria-hidden="true">🌍</span><span class="tb-label">The Planet</span></button>
+    <button class="tab-btn" data-tab="timeline"><span class="tb-ico" aria-hidden="true">🕑</span><span class="tb-label">Timeline</span></button>
   </nav>
   <button id="theme-toggle" class="theme-toggle" aria-label="Switch color theme">☀️</button>
 </header>
 
 <p id="boot-error" class="boot-error" hidden></p>
+
+<main id="main">
 
 <!-- ============================================================ -->
 <!-- TAB 1 — UNITED STATES                                        -->
@@ -62,8 +65,8 @@
     <form id="us-search" class="zip-form" autocomplete="off">
       <input id="us-input" maxlength="20" placeholder="Search a state — California, CA…" aria-label="State name or code">
       <button type="submit">Explore</button>
-      <span id="us-error" class="zip-mini-error" role="alert"></span>
     </form>
+    <p id="us-error" class="search-error" role="alert"></p>
   </header>
 
   <section class="map-grid-section">
@@ -77,7 +80,7 @@
     </div>
   </section>
 
-  <section class="region-panel" id="us-panel" hidden></section>
+  <section class="region-panel" id="us-panel" aria-live="polite" hidden></section>
 
   <section class="showcase" id="us-chips-section">
     <h2>Jump to a state</h2>
@@ -100,8 +103,8 @@
     <form id="world-search" class="zip-form" autocomplete="off">
       <input id="world-input" maxlength="40" placeholder="Country (e.g. China, Norway, India)" aria-label="Country">
       <button type="submit">Explore</button>
-      <span id="world-error" class="zip-mini-error" role="alert"></span>
     </form>
+    <p id="world-error" class="search-error" role="alert"></p>
   </header>
 
   <section class="map-grid-section">
@@ -115,7 +118,7 @@
     </div>
   </section>
 
-  <section class="region-panel" id="world-panel" hidden></section>
+  <section class="region-panel" id="world-panel" aria-live="polite" hidden></section>
 
   <section class="showcase">
     <h2>Three stories the map can't tell</h2>
@@ -140,7 +143,7 @@
     <h1>The electric car is<br><em>200 years</em> old</h1>
     <p class="deck">
       It led the race in 1900, lost to gasoline, and came back from the dead.
-      Scroll down to travel through the whole story.
+      Start in 1990 and scroll — or open the prologue to go all the way back to 1832.
     </p>
     <p class="scroll-hint">↓ scroll to begin</p>
   </header>
@@ -150,6 +153,8 @@
     <div class="tl-track" id="timeline-track"></div>
   </div>
 </section>
+
+</main>
 
 <!-- ===================== methodology / footer ===================== -->
 <footer class="methodology">
