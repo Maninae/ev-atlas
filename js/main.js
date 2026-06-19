@@ -95,6 +95,7 @@ function setupTheme() {
     const theme = document.documentElement.dataset.theme;
     btn.textContent = theme === "light" ? "🌙" : "☀️";
     syncMeta(theme);
+    btn.setAttribute("aria-pressed", String(theme === "light"));
   };
   sync();
   btn.addEventListener("click", () => {

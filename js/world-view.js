@@ -13,6 +13,8 @@ const MAPS = [
   { el: "worldmap-growth", key: "growth",      metric: "growth", max: 12,  lo: "declining", hi: "surging", tip: (c) => `${c.growth > 0 ? "+" : ""}${c.growth} pts in a year` },
 ];
 
+const NEEDS_THE = new Set(["GBR", "USA", "NLD", "PHL", "ARE", "BHS", "COD", "COG", "DOM", "CAF", "GMB", "VIR", "CZE"]);
+
 let WORLD, maps = [], selected = null;
 
 export function initWorld(data) {
@@ -45,13 +47,13 @@ export function initWorld(data) {
   const bp = data.battery;
   trendChart(document.getElementById("battery-chart"), {
     years: bp.years,
-    series: [{ vals: bp.vals, color: "var(--accent)", area: true, label: "$" + bp.vals[bp.vals.length - 1] }],
+    series: [{ vals: bp.vals, color: "var(--accent)", area: true, label: "$" + bp.vals[bp.vals.length - 1].toLocaleString() }],
     yMax: 1250, format: (v) => "$" + v, height: 260,
   });
   const bc = document.getElementById("battery-chart");
   const cap = document.createElement("p");
   cap.className = "card-lead"; cap.style.marginTop = "10px";
-  cap.innerHTML = `Lithium-ion battery packs fell from <strong>$${bp.vals[0]}</strong> to <strong>$${bp.vals[bp.vals.length - 1]} per kWh</strong> — a ${Math.round((1 - bp.vals[bp.vals.length - 1] / bp.vals[0]) * 100)}% drop that made affordable EVs possible. <span class="est-flag">${bp.source}</span>`;
+  cap.innerHTML = `Lithium-ion battery packs fell from <strong>$${bp.vals[0].toLocaleString()}</strong> to <strong>$${bp.vals[bp.vals.length - 1].toLocaleString()} per kWh</strong> — a ${Math.round((1 - bp.vals[bp.vals.length - 1] / bp.vals[0]) * 100)}% drop that made affordable EVs possible. <span class="est-flag">${bp.source}</span>`;
   bc.appendChild(cap);
 
   // cheapest strip
@@ -107,12 +109,16 @@ export function initWorld(data) {
         b.onclick = () => selectCountry(a3, true);
         row.appendChild(b);
       });
-      form.after(row);
+      err.after(row);
       return;
     }
     err.textContent = "Try a country name.";
     clearSuggest();
   };
+  document.getElementById("world-input").addEventListener("input", () => {
+    document.getElementById("world-error").textContent = "";
+    const s = document.getElementById("world-suggest"); if (s) s.remove();
+  });
 }
 
 export function refreshWorld() {
@@ -144,7 +150,7 @@ function selectCountry(a3, scroll) {
 
   panel.innerHTML = `
     <div class="region-header">
-      <p class="kicker">${c.region}</p>
+      ${c.region && c.region.toLowerCase() !== c.name.toLowerCase() ? `<p class="kicker">${c.region}</p>` : ""}
       <h2>${c.name}</h2>
       ${c.story ? `<p class="region-sub">${c.story}</p>` : ""}
     </div>
@@ -168,7 +174,7 @@ function selectCountry(a3, scroll) {
         <h3>How clean is the grid?</h3>
         ${c.lowCarbon != null
           ? `<div class="big-stat"><span class="num">${c.lowCarbon}%</span><span class="unit">low-carbon<br>electricity</span></div>
-             <p class="card-lead">An EV charged in ${c.name} runs on power that's <strong>${cleanPhrase(c.lowCarbon)}</strong>.</p>`
+             <p class="card-lead">An EV charged in ${NEEDS_THE.has(a3) ? "the " : ""}${c.name} runs on power that's <strong>${cleanPhrase(c.lowCarbon)}</strong>.</p>`
           : '<p class="card-lead">No grid data available.</p>'}
       </div>
     </div>`;

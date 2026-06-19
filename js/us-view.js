@@ -67,7 +67,7 @@ export function initUS(data) {
         row.id = "us-suggest";
         row.className = "chip-row";
         row.style.marginTop = "10px";
-        form.insertAdjacentElement("afterend", row);
+        err.insertAdjacentElement("afterend", row);
       }
       row.innerHTML = "";
       candidates.slice(0, 6).forEach((ab) => {
@@ -81,6 +81,11 @@ export function initUS(data) {
     err.textContent = "Try a state name or two-letter code.";
     clearSuggest();
   };
+
+  document.getElementById("us-input").addEventListener("input", () => {
+    document.getElementById("us-error").textContent = "";
+    const s = document.getElementById("us-suggest"); if (s) s.remove();
+  });
 }
 
 export function refreshUS() { maps.forEach((m) => m.refresh()); }
@@ -119,7 +124,7 @@ function renderPanel(ab) {
       <p class="kicker">United States · ${meta.shareYear}</p>
       <h2>${s.name}</h2>
       <p class="region-sub">${s.name} ranks <strong>${ord(s.shareRank)}</strong> for EV adoption — about
-        <strong>${s.share}%</strong> of new cars here are electric${s.shareEstimated ? '<button type="button" class="info-btn" data-info="est" aria-label="estimate">i</button>' : ""},
+        <strong>${s.share}%</strong> of new cars here are electric${s.shareEstimated ? ' <button type="button" class="info-btn" data-info="est" aria-label="estimate">i</button>' : ""},
         and <strong>${s.evStock.toLocaleString()}</strong> are already on the road.</p>
     </div>
     <div class="ev-grid">
@@ -146,7 +151,7 @@ function renderPanel(ab) {
       </div>
 
       <div class="card">
-        <h3>What it costs to drive</h3>
+        <h3>Cost to drive</h3>
         ${evCost < gasCost
           ? `<div class="big-stat"><span class="num">${Math.round((1 - evCost / gasCost) * 100)}%</span><span class="unit">cheaper to drive<br>on electricity</span></div>`
           : `<div class="big-stat"><span class="num">$${evCost.toFixed(2)}</span><span class="unit">to drive 100 mi<br>on electricity</span></div>`}

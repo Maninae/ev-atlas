@@ -48,7 +48,7 @@
 
 <p id="boot-error" class="boot-error" hidden></p>
 
-<main id="main">
+<main id="main" tabindex="-1">
 
 <!-- ============================================================ -->
 <!-- TAB 1 — UNITED STATES                                        -->
@@ -63,7 +63,7 @@
       US is electric — but the map is wildly uneven. Find your state.
     </p>
     <form id="us-search" class="zip-form" autocomplete="off">
-      <input id="us-input" maxlength="20" placeholder="Search a state — California, CA…" aria-label="State name or code">
+      <input id="us-input" maxlength="20" placeholder="e.g. California, CA" aria-label="State name or code">
       <button type="submit">Explore</button>
     </form>
     <p id="us-error" class="search-error" role="alert"></p>
@@ -101,7 +101,7 @@
       and the Global South is electrifying two and three wheels first. Pick a country.
     </p>
     <form id="world-search" class="zip-form" autocomplete="off">
-      <input id="world-input" maxlength="40" placeholder="Country (e.g. China, Norway, India)" aria-label="Country">
+      <input id="world-input" maxlength="40" placeholder="e.g. China or India" aria-label="Country">
       <button type="submit">Explore</button>
     </form>
     <p id="world-error" class="search-error" role="alert"></p>

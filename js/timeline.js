@@ -116,8 +116,11 @@ export function renderTimeline(container, events) {
       preWrap.className = "tl-section tl-section-pre";
       buildSection(preWrap, pre, preOffset);
       container.insertBefore(preWrap, bubble);
+      container.classList.add("has-prologue");
       bubble.hidden = true;
       bubble.setAttribute("aria-expanded", "true");
+      const deck = document.querySelector("#tab-timeline .deck");
+      if (deck) deck.innerHTML = "It led the race in 1900, lost to gasoline, and came back from the dead — and now you’re seeing the whole story, all the way back to 1832.";
       observe(preWrap);
       // Move focus to the first era header for screen-reader continuity.
       const firstEra = preWrap.querySelector(".tl-era");
