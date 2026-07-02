@@ -148,19 +148,19 @@ function renderPanel(ab) {
         and <strong>${s.evStock.toLocaleString()}</strong> are already on the road.</p>
     </div>
     <div class="ev-grid">
-      <div class="card">
+      <div class="card card--share">
         <h3>Going electric</h3>
         <div class="big-stat"><span class="num">${s.share}%</span><span class="unit">of new cars<br>are electric</span></div>
         <span class="rank-pill">${ord(s.shareRank)} of ${meta.count} states</span>
         ${s.shareEstimated ? '<p class="est-flag">estimated from state-level reporting</p>' : ""}
         <div class="kv-list">
           <div class="kv"><span class="k">EVs on the road</span><span class="v">${s.evStock.toLocaleString()}</span></div>
-          <div class="kv"><span class="k">per 1,000 people</span><span class="v">${s.evPer1k}</span></div>
+          <div class="kv kv--percap"><span class="k">per 1,000 people</span><span class="v">${s.evPer1k}</span></div>
           ${s.topModel ? `<div class="kv"><span class="k">most popular</span><span class="v">${s.topModel}</span></div>` : ""}
         </div>
       </div>
 
-      <div class="card">
+      <div class="card card--charging">
         <h3>Plugging in</h3>
         <div class="big-stat"><span class="num">${s.ports.toLocaleString()}</span><span class="unit">public<br>charging ports</span></div>
         <span class="rank-pill">${ord(s.portsPer100kRank)} per capita</span>
@@ -170,7 +170,7 @@ function renderPanel(ab) {
         </div>
       </div>
 
-      <div class="card">
+      <div class="card card--cost">
         <h3>Cost to drive</h3>
         ${evCost < gasCost
           ? `<div class="big-stat"><span class="num">${Math.round((1 - evCost / gasCost) * 100)}%</span><span class="unit">cheaper to drive<br>on electricity</span></div>`
@@ -182,7 +182,7 @@ function renderPanel(ab) {
         </div>
       </div>
 
-      <div class="card wide">
+      <div class="card card--clean wide">
         <h3>How clean is charging in ${s.name}?</h3>
         <p class="card-lead">An EV is only as clean as the grid that charges it. ${s.name}'s grid is
           <strong>${cleanN}% clean power</strong> today — ${trendPhrase} —${co2Clause} making charging here
@@ -193,9 +193,13 @@ function renderPanel(ab) {
     </div>`;
 
   if (s.gridCleanSeries && window.d3) {
+    // Match the clean-metric hue used by the map ramp / card accents so the
+    // trend chart reads as "same idea, deeper view" — not a separate teal-accent
+    // widget. trendChart already propagates `color` to line, area gradient stops,
+    // last-point dot, and annotation label; no chart-side change needed.
     trendChart(document.getElementById("us-clean-chart"), {
       years: s.gridCleanSeries.years,
-      series: [{ vals: s.gridCleanSeries.vals, color: "var(--accent)", area: true, label: cleanN + "%" }],
+      series: [{ vals: s.gridCleanSeries.vals, color: "var(--m-clean)", area: true, label: cleanN + "%" }],
       yMax: 100, format: (v) => v + "%", height: 200,
     });
   }

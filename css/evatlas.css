@@ -324,3 +324,96 @@
   0%, 25% { filter: drop-shadow(0 0 9px rgba(120, 240, 230, 0.65)); }
   100% { filter: drop-shadow(0 0 0 rgba(120, 240, 230, 0)); }
 }
+
+/* ===== US state-detail panel — per-metric card accents (Variant C) =====
+   Each of the four cards inherits the top color of its matching map ramp
+   (see --m-* tokens in base.css). Cards get: (1) a subtle hue-tinted surface,
+   (2) a 2px top hairline in the hue, (3) a small glowing title dot, (4) a
+   hued big-stat number with a soft glow — except the Cost card, which keeps
+   an ink big-stat and instead colors the per-fuel price row.
+
+   ALL rules are scoped under `#us-panel` so the World tab's country panel
+   (which shares .card / .ev-grid) is untouched. Cards are selected by
+   semantic modifier classes (.card--share / --charging / --cost / --clean)
+   set by renderPanel in us-view.js — no nth-child.
+
+   Per-card `--hue` and `--hue-hair` (hairline alpha) are set once on the
+   modifier class; everything else reads those vars so the four rules stay
+   symmetrical. */
+#us-panel .ev-grid > .card {
+  position: relative;                  /* anchors the ::before hairline */
+  --hue: var(--m-share);               /* fallback — per-card modifier below wins */
+  --hue-hair: 55%;                     /* hairline alpha */
+  --hue-glow: 22%;                     /* big-stat text-shadow alpha */
+  background: color-mix(in oklab, var(--card) calc(100% - var(--card-tint-amt)), var(--hue) var(--card-tint-amt));
+}
+/* Modifier rules chain `.card.card--X` (spec 1,2,0) to match the default's
+   `.ev-grid > .card` — source-order tie break lets these override --hue.
+   `.card--X` alone (1,1,0) would silently LOSE to the default and every card
+   would come out teal (learned the hard way). */
+#us-panel .card.card--share    { --hue: var(--m-share);    }
+#us-panel .card.card--charging { --hue: var(--m-charging); }
+/* Violet perceptually retreats on dark, so it gets a slightly stronger tint
+   and a slightly softer hairline than the others. */
+#us-panel .card.card--cost     { --hue: var(--m-percap); --hue-hair: 45%; --card-tint-amt: 8%; }
+#us-panel .card.card--clean    { --hue: var(--m-clean);  --hue-glow: 24%; }
+
+/* Light theme: keep the violet at ~3% too (the dark-theme 8% bump would go candy
+   on white paper). All other cards inherit the theme-level --card-tint-amt: 3%. */
+[data-theme="light"] #us-panel .card.card--cost { --card-tint-amt: 3%; }
+
+/* 2px top hairline — sits ON the card's top border (top:-1px / left:-1px / right:-1px)
+   so the two combine into one crisp hue-tinted edge instead of a doubled line.
+   Rounded to match the card's border-radius (16px). */
+#us-panel .ev-grid > .card::before {
+  content: "";
+  position: absolute;
+  top: -1px; left: -1px; right: -1px;
+  height: 2px;
+  background: color-mix(in srgb, var(--hue) var(--hue-hair), transparent);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  pointer-events: none;
+}
+
+/* Small glowing title dot before each card's h3 — 9px circle in the hue with a
+   soft outer glow so it reads as a "power indicator" rather than a bullet.
+   Kept INLINE (not a flex item) so on multi-line titles like the Clean card's
+   "How clean is charging in California?" the dot stays anchored to the first
+   character, not centered vertically against the whole wrapped block. */
+#us-panel .ev-grid > .card > h3::before {
+  content: "";
+  display: inline-block;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--hue);
+  box-shadow: 0 0 8px var(--hue);
+  margin-right: 10px;
+  vertical-align: 0.18em;
+}
+
+/* Big-stat number colored in the card's hue with a soft glow. Cost card is
+   excluded — its big stat stays ink (spec: no hue, no glow) because the price
+   comparison inside the card is what carries the color story. */
+#us-panel .ev-grid > .card:not(.card--cost) .big-stat .num {
+  color: var(--hue);
+  text-shadow: 0 0 26px color-mix(in srgb, var(--hue) var(--hue-glow), transparent);
+}
+#us-panel .card--cost .big-stat .num { color: var(--ink); text-shadow: none; }
+
+/* Light theme kills the glow across the board (paper is bright enough that the
+   halo turns into a mud smear). Existing --num-glow does the same trick for the
+   default .big-stat rule; we mirror it here for our per-card overrides. */
+[data-theme="light"] #us-panel .ev-grid > .card .big-stat .num { text-shadow: none; }
+
+/* The share card's "per 1,000 people" row is colored in --m-percap so it
+   double-serves as a subtle hint back to the per-capita map above. The kv--percap
+   marker is added by us-view.js so this doesn't depend on row order. */
+#us-panel .card--share .kv--percap .v { color: var(--m-percap); }
+
+/* Cost card price comparison: electric price wears the share teal (canonical
+   "electric" hue on the site), gas wears the muted warm gray so the two figures
+   feel like different fuels, not two amber cousins. Overrides .charge-compare
+   defaults from components.css. */
+#us-panel .card--cost .charge-compare .cc.ev .amt { color: var(--m-share); }
+#us-panel .card--cost .charge-compare .cc.gas .amt { color: var(--price-gas); }

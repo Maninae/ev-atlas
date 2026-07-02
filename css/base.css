@@ -27,6 +27,23 @@
   --rail-w: 172px;
   --pulse: #1C2540;
   --num-glow: 0 0 26px rgba(47, 227, 208, 0.20);
+  /* Metric hue tokens — mirror the TOP endpoints of RAMPS in js/colors.js and are
+     the single source of truth for per-metric UI accents (US state-detail panel
+     cards, hued big-stat numbers, top hairlines, title dots). If a ramp top ever
+     shifts, update BOTH RAMPS and these tokens together. Fixed across themes,
+     same discipline as the map ramps themselves. */
+  --m-share:    #2FE3D0;   /* share      — electric teal (also the brand accent) */
+  --m-percap:   #9D8CFF;   /* per-capita — electric violet */
+  --m-charging: #F5B63F;   /* charging   — charged amber */
+  --m-clean:    #39D98E;   /* grid clean — Grid Atlas green */
+  /* Muted warm gray for the gasoline price figure in the Cost card — pulls it
+     away from the charging-amber gold and reads as "reference number, not a
+     metric". Themed for legibility on white paper below. */
+  --price-gas: #A79680;
+  /* Per-card tint strength for the US-panel cards (see #us-panel rules).
+     6% reads as a quiet hint on the dark card. Violet retreats perceptually,
+     so the cost card bumps to 8% in the scoped rule. */
+  --card-tint-amt: 6%;
   --font-display: "Space Grotesk", "Avenir Next", sans-serif;
   --font-body: "Manrope", -apple-system, sans-serif;
   --font-ui: "Manrope", -apple-system, sans-serif;
@@ -56,6 +73,12 @@
   --topbar-bg: rgba(244, 246, 251, 0.9);
   --pulse: #DDE6F7; /* cool electric haze on the light pulse */
   --num-glow: none;
+  /* Same 6% mix reads ~3× stronger on white paper (mockup went candy).
+     Halve it to keep the tints as a quiet whisper. */
+  --card-tint-amt: 3%;
+  /* Warm gray sinks against white; lift saturation & darken so the gasoline
+     figure holds its own on the cost card's beige tint. */
+  --price-gas: #7A6A54;
 }
 
 * { box-sizing: border-box; }
@@ -152,8 +175,22 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; }
   margin: 18px 0 26px;
 }
 
+/* Quiet "vintage" credit line beneath the hero — small mono, muted. A credibility
+   marker (this is real dated data, not vibes), not a banner. Sits below the search
+   pill / error line so it doesn't compete for attention. */
+.hero-vintage {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  opacity: 0.72;
+  margin: 14px 0 0;
+  text-align: center;
+  max-width: 640px;
+}
+
 /* staggered load-in */
-.hero .kicker, .hero h1, .hero .deck, .hero .zip-form {
+.hero .kicker, .hero h1, .hero .deck, .hero .zip-form, .hero .hero-vintage {
   opacity: 0;
   transform: translateY(14px);
   transition: opacity 0.7s ease, transform 0.7s ease;
@@ -162,6 +199,7 @@ body.loaded .hero .kicker { opacity: 1; transform: none; transition-delay: 0.05s
 body.loaded .hero h1 { opacity: 1; transform: none; transition-delay: 0.15s; }
 body.loaded .hero .deck { opacity: 1; transform: none; transition-delay: 0.3s; }
 body.loaded .hero .zip-form { opacity: 1; transform: none; transition-delay: 0.45s; }
+body.loaded .hero .hero-vintage { opacity: 0.72; transform: none; transition-delay: 0.6s; }
 
 /* ---------- four-map grid: the whole national picture in one screen ---------- */
 .map-grid-section { max-width: 1160px; margin: 8px auto 0; padding: 0 24px; text-align: center; }
@@ -241,4 +279,5 @@ body.loaded .hero .zip-form { opacity: 1; transform: none; transition-delay: 0.4
   body { font-size: 17px; padding-left: 0; padding-bottom: calc(64px + env(safe-area-inset-bottom)); }  /* rail is now a bottom bar */
   .map-grid { grid-template-columns: 1fr; gap: 14px; }
   .region-panel { padding: 16px; }
+  .hero-vintage { font-size: 11px; letter-spacing: 0.04em; padding: 0 12px; }
 }
