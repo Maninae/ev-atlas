@@ -51,27 +51,31 @@
 }
 
 [data-theme="light"] {
-  --paper: #F4F6FB;
-  --paper-deep: #E9EDF6;
-  --card: #FFFFFF;
-  --pop: #FFFFFF;
-  --pop-ink: #1A2238;
-  --pop-ink-soft: #4A5773;
-  --pop-border: #D5DCEC;
-  --ink: #182036;
-  --ink-soft: #56627E;
-  --rule: #DEE4F0;
+  /* Neutrals shifted from cool blue-violet to a warm sepia-cream undertone —
+     "warm night paper," subtle and low-saturation (delta on B ≈ 8–14 vs
+     original). Metric hues, accents, and status colors are untouched; only
+     the ambient neutral family (paper/card/border/rule/ink/shadow) warms. */
+  --paper: #F7F3EC;
+  --paper-deep: #EDE7DA;
+  --card: #FFFDF7;
+  --pop: #FFFDF7;
+  --pop-ink: #1F1A13;
+  --pop-ink-soft: #5F564A;
+  --pop-border: #E1DACC;
+  --ink: #1D1912;
+  --ink-soft: #6B6152;
+  --rule: #E8E1D2;
   --accent: #0E9E91;
   --accent2: #6D55E0;
   --on-accent: #FFFFFF;
   --gold: #B5791A;
-  --shadow: 0 1px 2px rgba(20, 26, 45, 0.06), 0 10px 28px rgba(20, 26, 45, 0.10);
-  --map-nodata: #DEE3EF;
-  --plant-fill: #E8ECF5;
-  --price-us: #7A8499;
+  --shadow: 0 1px 2px rgba(60, 40, 20, 0.06), 0 10px 28px rgba(60, 40, 20, 0.10);
+  --map-nodata: #E5DDCE;
+  --plant-fill: #EFE8DA;
+  --price-us: #8C7E6C;
   --price-state: #6D55E0;
-  --topbar-bg: rgba(244, 246, 251, 0.9);
-  --pulse: #DDE6F7; /* cool electric haze on the light pulse */
+  --topbar-bg: rgba(247, 243, 236, 0.9);
+  --pulse: #ECE1CB; /* warm cream haze on the light pulse */
   --num-glow: none;
   /* Same 6% mix reads ~3× stronger on white paper (mockup went candy).
      Halve it to keep the tints as a quiet whisper. */
@@ -111,9 +115,12 @@ body {
 }
 
 [data-theme="light"] body {
+  /* Ambient halos warmed too — the original cool violet + teal radials were a
+     major source of the "cool purple" cast. Amber + warm-gold at similar low
+     alpha keep the two-source vibe without fighting the sepia paper. */
   background:
-    radial-gradient(1100px 600px at 85% -5%, rgba(109, 85, 224, 0.07), transparent 60%),
-    radial-gradient(950px 550px at -5% 30%, rgba(14, 158, 145, 0.05), transparent 55%),
+    radial-gradient(1100px 600px at 85% -5%, rgba(210, 150, 90, 0.07), transparent 60%),
+    radial-gradient(950px 550px at -5% 30%, rgba(190, 145, 70, 0.05), transparent 55%),
     var(--paper);
 }
 
